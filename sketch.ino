@@ -1,10 +1,9 @@
 #include <WiFi.h>//library for wifi
 #include <PubSubClient.h>//library for MQtt 
 #include "DHT.h"// Library for dht11
-#define DHTPIN 15     // what pin we're connected to
-#define DHTTYPE DHT22   // define type of sensor DHT 11
-#define LED 2
-
+#define DHTPIN 4     // what pin we're connected to
+#define DHTTYPE DHT11   // define type of sensor DHT 11
+#define LED 5
 DHT dht (DHTPIN, DHTTYPE);// creating the instance by passing pin and typr of dht connected
 
 void callback(char* subscribetopic, byte* payload, unsigned int payloadLength); 
@@ -21,8 +20,8 @@ float h, t;
 
 //-------- Customise the above values --------
 char server[] = ORG ".messaging.internetofthings.ibmcloud.com";// Server Name
-char publishTopic[] = "iot-2/evt/harish/fmt/json";// topic name and type of event perform and format in which data to be send
-char subscribetopic[] = "iot-2/cmd/command/fmt/String";// cmd  REPRESENT command type AND COMMAND IS TEST OF FORMAT STRING
+char publishTopic[] = "iot-2/evt/Data/fmt/json";// topic name and type of event perform and format in which data to be send
+char subscribetopic[] = "iot-2/cmd/test/fmt/String";// cmd  REPRESENT command type AND COMMAND IS TEST OF FORMAT STRING
 char authMethod[] = "use-token-auth";// authentication method
 char token[] = TOKEN;
 char clientId[] = "d:" ORG ":" DEVICE_TYPE ":" DEVICE_ID;//client id
@@ -31,8 +30,6 @@ char clientId[] = "d:" ORG ":" DEVICE_TYPE ":" DEVICE_ID;//client id
 //-----------------------------------------
 WiFiClient wifiClient; // creating the instance for wificlient
 PubSubClient client(server, 1883, callback ,wifiClient); //calling the predefined client id by passing parameter like server id,portand wificredential
-
-
 void setup()// configureing the ESP32 
 {
   Serial.begin(115200);
@@ -70,9 +67,9 @@ void PublishData(float temp, float humid) {
   /*
      creating the String in in form JSon to update the data to ibm cloud
   */
-  String payload = "{\"Temperature\":";
+  String payload = "{\"temperature\":";
   payload += temp;
-  payload += "," "\"Humidity\":";
+  payload += "," "\"humidity\":";
   payload += humid;
   payload += "}";
 
@@ -88,8 +85,6 @@ void PublishData(float temp, float humid) {
   }
   
 }
-
-
 void mqttconnect() {
   if (!client.connected()) {
     Serial.print("Reconnecting client to ");
